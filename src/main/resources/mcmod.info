@@ -1,0 +1,16 @@
+[
+{
+  "modid": "powerdrop",
+  "name": "Power Drop",
+  "description": "Allows more powerful item dropping.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["OmegaJak"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
