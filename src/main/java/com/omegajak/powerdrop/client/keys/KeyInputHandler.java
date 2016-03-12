@@ -1,6 +1,7 @@
 package com.omegajak.powerdrop.client.keys;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
@@ -17,6 +18,7 @@ public class KeyInputHandler {
 	
 	boolean previousQState = false;
 	long keyDownTime = 0;
+	boolean wasCtrlDown = false;
 	
 	double lastChargeFactor = 0;
 	
@@ -58,6 +60,8 @@ public class KeyInputHandler {
 			//System.out.println("Q Pressed Down");
 			keyDownTime = System.currentTimeMillis();
 			previousQState = true;
+			
+			wasCtrlDown = GuiScreen.isCtrlKeyDown();
 		} else if (!KeyBindings.drop.getIsKeyPressed() && !KeyBindings.drop.isPressed() && previousQState) {
 			long timeElapsed = System.currentTimeMillis() - keyDownTime;
 			////System.out.println(timeElapsed + " milliseconds elapsed.");
@@ -66,7 +70,9 @@ public class KeyInputHandler {
 			//EntityClientPlayerMP currentPlayer = Minecraft.getMinecraft().thePlayer;
 			//currentPlayer.sendChatMessage("ChargeFactor: " + String.format("%.5g%n", convertChargeTimeToFactor(timeElapsed)) + ", timeElapsed: " + timeElapsed);
 			
-			PowerDrop.network.sendToServer(new DropMessage(convertChargeTimeToFactor(timeElapsed)));
+			PowerDrop.network.sendToServer(new DropMessage(convertChargeTimeToFactor(timeElapsed), wasCtrlDown));
+			
+			wasCtrlDown = false;
 			
 			//Minecraft.getMinecraft().thePlayer.inventory.mainInventory
 			
