@@ -1,8 +1,9 @@
 package com.omegajak.powerdrop.client.keys;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -21,6 +22,10 @@ public class KeyInputHandler {
 	boolean wasCtrlDown = false;
 	
 	double lastChargeFactor = 0;
+	
+	float fovMultiplier = 1.0F;
+	float originalFOV;
+	boolean isFOVResetting = false;
 	
 	public double convertChargeTimeToFactor(long chargeTime) {
 		//return 1.0;
@@ -42,12 +47,45 @@ public class KeyInputHandler {
 	
 	@SubscribeEvent
 	public void onClientTickEvent(TickEvent.ClientTickEvent event) {
+		GameSettings settings = Minecraft.getMinecraft().gameSettings; // Just so I don't have to keep typing this
 		if (KeyBindings.drop.getIsKeyPressed()) {
 			double chargeFactor = convertChargeTimeToFactor(System.currentTimeMillis() - keyDownTime);
 			if (chargeFactor == 4.0 && lastChargeFactor != 4.0) {
-				EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+				EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
 				player.addChatMessage(new ChatComponentText("MAXIMUM POWER ACHIEVED").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD)));
 				lastChargeFactor = 4.0;
+			}
+			
+			chargeFactor -= 1.0;
+			Minecraft.getMinecraft().gameSettings.fovSetting /= fovMultiplier;
+			fovMultiplier = 1.0F + (float)(chargeFactor / 8.0);
+			//fovMultiplier = fovMultiplier < 1.0F ? 1.0F : fovMultiplier; // Floor
+			System.out.println("Multiplier: " + fovMultiplier);
+			
+			if (settings.fovSetting * fovMultiplier < originalFOV * 1.5)
+				settings.fovSetting *= fovMultiplier;
+			else
+				settings.fovSetting = originalFOV * 1.5F;
+		} else if (isFOVResetting) {
+			/*float diff = fovMultiplier - 1.0F;
+			if (diff < 0.001F) {
+				fovMultiplier = 1.0F;
+			} else {
+				fovMultiplier = fovMultiplier - (diff / 8.0F);
+			}
+			Minecraft.getMinecraft().gameSettings.fovSetting /= fovMultiplier;*/
+			
+			float diff = settings.fovSetting - originalFOV;
+			
+			if (diff / 8.0F < 0.001F) {
+				settings.fovSetting = originalFOV;
+				isFOVResetting = false;
+				fovMultiplier = 1.0F;
+				System.out.println("Reset");
+			} else {
+				settings.fovSetting -= diff / 8.0F;
+				fovMultiplier = originalFOV / settings.fovSetting;
+				System.out.println("fovSetting: " + settings.fovSetting);
 			}
 		}
 	}
@@ -62,6 +100,12 @@ public class KeyInputHandler {
 			previousQState = true;
 			
 			wasCtrlDown = GuiScreen.isCtrlKeyDown();
+			
+			if (!isFOVResetting)
+				originalFOV = Minecraft.getMinecraft().gameSettings.fovSetting;
+			
+			/*FOVUpdateEvent fovUpdateEvent = new FOVUpdateEvent(Minecraft.getMinecraft().thePlayer, 4.0F);
+			MinecraftForge.EVENT_BUS.post(fovUpdateEvent);*/
 		} else if (!KeyBindings.drop.getIsKeyPressed() && !KeyBindings.drop.isPressed() && previousQState) {
 			long timeElapsed = System.currentTimeMillis() - keyDownTime;
 			////System.out.println(timeElapsed + " milliseconds elapsed.");
@@ -78,6 +122,12 @@ public class KeyInputHandler {
 			
 			previousQState = false;
 			lastChargeFactor = 0.0;
+			
+			isFOVResetting = true;
+			/*Minecraft.getMinecraft().gameSettings.fovSetting /= fovMultiplier;
+			fovMultiplier = 1.0F;*/
+			/*FOVUpdateEvent fovUpdateEvent = new FOVUpdateEvent(Minecraft.getMinecraft().thePlayer, 2.0F);
+			MinecraftForge.EVENT_BUS.post(fovUpdateEvent);*/
 		}
 	}
 }
