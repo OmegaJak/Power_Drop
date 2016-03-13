@@ -77,6 +77,7 @@ public class KeyInputHandler {
 			//Minecraft.getMinecraft().thePlayer.inventory.mainInventory
 			
 			previousQState = false;
+			lastChargeFactor = 0.0;
 		}
 	}
 }
