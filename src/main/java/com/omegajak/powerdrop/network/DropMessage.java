@@ -42,7 +42,6 @@ public class DropMessage implements IMessage {
 		@Override
 		public DropMessage onMessage(DropMessage message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				////System.out.println("ChargeFactor is: " + message.chargeFactor);
 				EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 				
 				if (player.inventory.getCurrentItem() != null) {
@@ -55,7 +54,7 @@ public class DropMessage implements IMessage {
 					}
 					
 					EntityItem dropped = new EntityItem(player.worldObj, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
-					dropped.delayBeforeCanPickup = 20; // Ticks
+					dropped.delayBeforeCanPickup = 40; // Ticks until it can be picked up again
 					
 					double normalizer = 3.1;
 					Vec3 lookVector = player.getLookVec();
@@ -65,10 +64,10 @@ public class DropMessage implements IMessage {
 					
 					player.worldObj.spawnEntityInWorld(dropped);
 					
-					if (player.inventory.getCurrentItem().stackSize > 1 && !message.isCtrlDown)
+					if (player.inventory.getCurrentItem().stackSize > 1 && !message.isCtrlDown) // If it was just a normal throw
 						player.inventory.getCurrentItem().stackSize--;
-					else
-						player.inventory.mainInventory[player.inventory.currentItem] = null;
+					else // If it was either the last item of the stack or they held control
+						player.inventory.mainInventory[player.inventory.currentItem] = null; // Either way, the stack should be no more
 					
 					MinecraftForge.EVENT_BUS.post(new ItemTossEvent(dropped, player));
 				}
