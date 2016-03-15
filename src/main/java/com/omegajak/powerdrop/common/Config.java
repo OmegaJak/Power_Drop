@@ -26,7 +26,6 @@ public class Config {
 	
 	public static void load() {
 		maxPower = config.get(Configuration.CATEGORY_GENERAL, "showMaxPower", true, "Set this to false to disable the \"MAXIMUM POWER ACHIEVED\" message.").getBoolean();
-		System.out.println("Show Max Power = " + maxPower);
 		
 		config.save();
 	}
