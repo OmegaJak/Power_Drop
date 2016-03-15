@@ -13,6 +13,7 @@ public class Config {
 	public static File configFile;
 
 	public static boolean maxPower;
+	public static boolean adjustFOV;
 	
 	public static void init(File file) {
 		configFile = file;
@@ -26,6 +27,7 @@ public class Config {
 	
 	public static void load() {
 		maxPower = config.get(Configuration.CATEGORY_GENERAL, "showMaxPower", true, "Set this to false to disable the \"MAXIMUM POWER ACHIEVED\" message.").getBoolean();
+		adjustFOV = config.get(Configuration.CATEGORY_GENERAL, "adjustFOV", true, "Set to to disable FOV adjustment when charging for a power drop.").getBoolean();
 		
 		config.save();
 	}
