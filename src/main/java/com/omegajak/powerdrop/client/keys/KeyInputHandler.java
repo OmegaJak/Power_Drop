@@ -8,7 +8,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
-import com.omegajak.powerdrop.PowerDrop;
+import com.omegajak.powerdrop.common.Config;
+import com.omegajak.powerdrop.common.PowerDrop;
 import com.omegajak.powerdrop.network.DropMessage;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -53,8 +54,10 @@ public class KeyInputHandler {
 				double chargeFactor = convertChargeTimeToFactor(System.currentTimeMillis() - keyDownTime);
 				if (chargeFactor == 4.0 && lastChargeFactor != 4.0) { // If we just now reached the maximum power
 					EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-					player.addChatMessage(new ChatComponentText("MAXIMUM POWER ACHIEVED").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD)));
 					lastChargeFactor = 4.0; // So we don't keep spamming the max message
+					
+					if (Config.maxPower)
+						player.addChatMessage(new ChatComponentText("MAXIMUM POWER ACHIEVED").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD)));
 				}
 				
 				chargeFactor -= 1.0;
@@ -94,7 +97,6 @@ public class KeyInputHandler {
 			
 		} else if (!KeyBindings.drop.getIsKeyPressed() && !KeyBindings.drop.isPressed() && previousQState) {
 			finalChargeTime = System.currentTimeMillis() - keyDownTime;
-			System.out.println(finalChargeTime);
 			
 			PowerDrop.network.sendToServer(new DropMessage(convertChargeTimeToFactor(finalChargeTime), wasCtrlDown));
 			

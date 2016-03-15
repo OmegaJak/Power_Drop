@@ -1,4 +1,4 @@
-package com.omegajak.powerdrop;
+package com.omegajak.powerdrop.common;
 
 import com.omegajak.powerdrop.network.DropMessage;
 import com.omegajak.powerdrop.proxies.CommonProxy;
@@ -14,7 +14,10 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = PowerDrop.MODID, name = PowerDrop.MODNAME, version = PowerDrop.VERSION)
+@Mod(modid = PowerDrop.MODID,
+		name = PowerDrop.MODNAME,
+		version = PowerDrop.VERSION,
+		guiFactory = "com.omegajak." + PowerDrop.MODID + ".client.gui.GuiFactoryPowerDrop")
 public class PowerDrop {
 	
 	public static final String MODID = "powerdrop";
@@ -35,6 +38,8 @@ public class PowerDrop {
 		
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("PowerDrop");
 		network.registerMessage(DropMessage.Handler.class, DropMessage.class, 0, Side.SERVER);
+		
+		Config.init(e.getSuggestedConfigurationFile());
     }
         
     @EventHandler
