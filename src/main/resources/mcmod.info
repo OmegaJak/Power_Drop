@@ -3,7 +3,7 @@
   "modid": "powerdrop",
   "name": "Power Drop",
   "description": "Allows more powerful item dropping.",
-  "version": "1.0",
+  "version": "1.0.1",
   "mcversion": "1.7.10",
   "url": "https://github.com/OmegaJak/Power_Drop",
   "updateUrl": "",
