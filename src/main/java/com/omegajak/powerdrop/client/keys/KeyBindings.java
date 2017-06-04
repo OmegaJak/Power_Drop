@@ -1,15 +1,18 @@
 package com.omegajak.powerdrop.client.keys;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
+import org.lwjgl.input.Keyboard;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.StatCollector;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class KeyBindings {
 	public static KeyBinding drop;
 	
 	public static void init() {
-		drop = new KeyBinding(StatCollector.translateToLocal("key.powerdrop"), 16, "key.categories.gameplay");
-		
+		drop = new KeyBinding("key.powerdrop", KeyConflictContext.IN_GAME, Keyboard.KEY_Q, "key.categories.gameplay");
+		Minecraft.getMinecraft().gameSettings.keyBindDrop.setKeyConflictContext(KeyConflictContext.GUI);
 		ClientRegistry.registerKeyBinding(drop);
 	}
 }

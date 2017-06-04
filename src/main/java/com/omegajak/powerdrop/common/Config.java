@@ -2,10 +2,10 @@ package com.omegajak.powerdrop.common;
 
 import java.io.File;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Config {
 	
@@ -22,7 +22,7 @@ public class Config {
 		config.load();
 		load();
 		
-		FMLCommonHandler.instance().bus().register(new Config.EventHandler());
+		MinecraftForge.EVENT_BUS.register(new Config.EventHandler());
 	}
 	
 	public static void load() {
@@ -36,7 +36,7 @@ public class Config {
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
 			System.out.println("OnConfigChangedEvent");
-			if (event.modID.equals(PowerDrop.MODID)) {
+			if (event.getModID().equals(PowerDrop.MODID)) {
 				load();
 			}
 		}

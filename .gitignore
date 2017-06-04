@@ -7,3 +7,4 @@
 *.project
 /gradlew
 /gradlew.bat
+*.launch

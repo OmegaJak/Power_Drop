@@ -4,13 +4,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class DropMessage implements IMessage {
 
@@ -54,10 +54,11 @@ public class DropMessage implements IMessage {
 					}
 					
 					EntityItem dropped = new EntityItem(player.worldObj, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
-					dropped.delayBeforeCanPickup = 40; // Ticks until it can be picked up again
+					dropped.setPickupDelay(40); // Ticks until it can be picked up again
+					
 					
 					double normalizer = 3.1;
-					Vec3 lookVector = player.getLookVec();
+					Vec3d lookVector = player.getLookVec();
 					dropped.motionX = (lookVector.xCoord / normalizer) * message.chargeFactor;
 					dropped.motionY = (lookVector.yCoord / normalizer) * message.chargeFactor + 0.12;
 					dropped.motionZ = (lookVector.zCoord / normalizer) * message.chargeFactor;
