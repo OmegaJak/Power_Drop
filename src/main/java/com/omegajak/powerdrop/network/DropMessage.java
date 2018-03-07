@@ -43,7 +43,7 @@ public class DropMessage implements IMessage {
 	
 	public static class Handler implements IMessageHandler<DropMessage, DropMessage> {
 		@Override
-		public DropMessage onMessage(DropMessage message, MessageContext ctx) {
+		public DropMessage onMessage(final DropMessage message, final MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
 				IThreadListener thread = PowerDrop.proxy.getListener(ctx);
 				thread.addScheduledTask(new Runnable() {

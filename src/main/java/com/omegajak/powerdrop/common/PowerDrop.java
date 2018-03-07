@@ -22,12 +22,12 @@ public class PowerDrop {
 	
 	public static final String MODID = "powerdrop";
 	public static final String MODNAME = "Power Drop";
-	public static final String VERSION = "1.0.1";
+	public static final String VERSION = "1.0.2";
 	
 	public static SimpleNetworkWrapper network;
 	
 	@Instance
-	public static PowerDrop idnstance = new PowerDrop();
+	public static PowerDrop instance = new PowerDrop();
 	
 	@SidedProxy(clientSide="com.omegajak.powerdrop.proxies.ClientProxy", serverSide="com.omegajak.powerdrop.proxies.CommonProxy")
 	public static CommonProxy proxy;
