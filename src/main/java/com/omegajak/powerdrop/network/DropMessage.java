@@ -49,33 +49,33 @@ public class DropMessage implements IMessage {
 				thread.addScheduledTask(new Runnable() {
 					@Override
 					public void run() {
-						EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+						EntityPlayerMP player = ctx.getServerHandler().player;
 						
 						if (player.inventory.getCurrentItem() != null) {
 							ItemStack currentItem = player.inventory.getCurrentItem().copy();
 							
 							if (message.isCtrlDown) {
-								currentItem.stackSize = player.inventory.getCurrentItem().stackSize;
+								currentItem.setCount(player.inventory.getCurrentItem().getCount());
 							} else {
-								currentItem.stackSize = 1;
+								currentItem.setCount(1);
 							}
 							
-							EntityItem dropped = new EntityItem(player.worldObj, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
+							EntityItem dropped = new EntityItem(player.world, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
 							dropped.setPickupDelay(40); // Ticks until it can be picked up again
 							
 							
 							double normalizer = 3.1;
 							Vec3d lookVector = player.getLookVec();
-							dropped.motionX = (lookVector.xCoord / normalizer) * message.chargeFactor;
-							dropped.motionY = (lookVector.yCoord / normalizer) * message.chargeFactor + 0.12;
-							dropped.motionZ = (lookVector.zCoord / normalizer) * message.chargeFactor;
+							dropped.motionX = (lookVector.x / normalizer) * message.chargeFactor;
+							dropped.motionY = (lookVector.y / normalizer) * message.chargeFactor + 0.12;
+							dropped.motionZ = (lookVector.z / normalizer) * message.chargeFactor;
 							
-							player.worldObj.spawnEntityInWorld(dropped);
+							player.world.spawnEntity(dropped);
 							
-							if (player.inventory.getCurrentItem().stackSize > 1 && !message.isCtrlDown) // If it was just a normal throw
-								player.inventory.getCurrentItem().stackSize--;
+							if (player.inventory.getCurrentItem().getCount() > 1 && !message.isCtrlDown) // If it was just a normal throw
+								player.inventory.getCurrentItem().setCount(player.inventory.getCurrentItem().getCount() - 1);
 							else // If it was either the last item of the stack or they held control
-								player.inventory.mainInventory[player.inventory.currentItem] = null; // Either way, the stack should be no more
+								player.inventory.deleteStack(player.inventory.getCurrentItem()); // Either way, the stack should be no more
 							
 							MinecraftForge.EVENT_BUS.post(new ItemTossEvent(dropped, player));
 						}

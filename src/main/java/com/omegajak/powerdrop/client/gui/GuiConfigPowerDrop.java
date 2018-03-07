@@ -1,4 +1,6 @@
-package com.omegajak.powerdrop.client.gui;
+/*package com.omegajak.powerdrop.client.gui;
+
+import java.util.List;
 
 import com.omegajak.powerdrop.common.Config;
 import com.omegajak.powerdrop.common.PowerDrop;
@@ -7,6 +9,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
 
 public class GuiConfigPowerDrop extends GuiConfig {
@@ -20,3 +23,4 @@ public class GuiConfigPowerDrop extends GuiConfig {
 		//titleLine2 = Config.config
 	}
 }
+*/

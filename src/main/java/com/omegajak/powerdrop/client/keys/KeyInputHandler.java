@@ -1,7 +1,7 @@
 package com.omegajak.powerdrop.client.keys;
 
-import com.omegajak.powerdrop.common.Config;
 import com.omegajak.powerdrop.common.PowerDrop;
+import com.omegajak.powerdrop.common.PowerDropConfig;
 import com.omegajak.powerdrop.network.DropMessage;
 
 import net.minecraft.client.Minecraft;
@@ -67,13 +67,13 @@ public class KeyInputHandler {
 			if (KeyBindings.drop.isKeyDown() && (finalChargeTime > 120 || System.currentTimeMillis() - keyDownTime > 150)) {
 				double chargeFactor = convertChargeTimeToFactor(System.currentTimeMillis() - keyDownTime);
 				if (chargeFactor == 4.0 && lastChargeFactor != 4.0) { // If we just now reached the maximum power
-					EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+					EntityPlayerSP player = Minecraft.getMinecraft().player;
 					lastChargeFactor = 4.0; // So we don't keep spamming the max message
-					if (Config.maxPower)
-						player.addChatMessage(new TextComponentString("MAXIMUM POWER ACHIEVED").setStyle(new Style().setColor(TextFormatting.GOLD)));
+					if (PowerDropConfig.maxPower)
+						player.sendMessage(new TextComponentString("MAXIMUM POWER ACHIEVED").setStyle(new Style().setColor(TextFormatting.GOLD)));
 				}
 
-				if (Config.adjustFOV) { // If adjustFOV is false, we still want the rest to happen so we have the change to get the chat message
+				if (PowerDropConfig.adjustFOV) { // If adjustFOV is false, we still want the rest to happen so we have the change to get the chat message
 					chargeFactor -= 1.0;
 					Minecraft.getMinecraft().gameSettings.fovSetting /= fovMultiplier; // Reset so we don't have cumulative multiplication (can get out of hand very fast)
 					fovMultiplier = 1.0F + (float) (chargeFactor / 8.0);
@@ -85,7 +85,7 @@ public class KeyInputHandler {
 						settings.fovSetting = originalFOV * 1.5F; // Hard cap at multiplying by 1.5F
 					}
 				}
-			} else if (isFOVResetting && Config.adjustFOV) {
+			} else if (isFOVResetting && PowerDropConfig.adjustFOV) {
 				float diff = settings.fovSetting - originalFOV;
 
 				if (diff / 8.0F < 0.001F) { // Gotta stop at some point

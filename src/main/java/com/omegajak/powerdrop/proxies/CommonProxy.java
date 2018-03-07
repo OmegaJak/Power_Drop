@@ -21,6 +21,6 @@ public class CommonProxy {
     }
     
     public IThreadListener getListener(MessageContext ctx) {
-    	return (WorldServer)ctx.getServerHandler().playerEntity.worldObj;
+    	return (WorldServer)ctx.getServerHandler().player.world;
     }
 }

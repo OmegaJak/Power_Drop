@@ -2,9 +2,9 @@
 {
   "modid": "powerdrop",
   "name": "Power Drop",
-  "description": "Allows more powerful item dropping.",
-  "version": "1.0.2",
-  "mcversion": "1.10",
+  "description": "Allows items to be thrown farther the longer the throw button is held.",
+  "version": ${version},
+  "mcversion": ${mcversion},
   "url": "https://github.com/OmegaJak/Power_Drop",
   "updateUrl": "",
   "authorList": ["OmegaJak"],

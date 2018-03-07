@@ -15,14 +15,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = PowerDrop.MODID,
-		name = PowerDrop.MODNAME,
-		version = PowerDrop.VERSION,
-		guiFactory = "com.omegajak." + PowerDrop.MODID + ".client.gui.GuiFactoryPowerDrop")
+		name = PowerDrop.MODNAME)
 public class PowerDrop {
 	
 	public static final String MODID = "powerdrop";
 	public static final String MODNAME = "Power Drop";
-	public static final String VERSION = "1.0.2";
 	
 	public static SimpleNetworkWrapper network;
 	
@@ -39,7 +36,7 @@ public class PowerDrop {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("PowerDrop");
 		network.registerMessage(DropMessage.Handler.class, DropMessage.class, 0, Side.SERVER);
 		
-		Config.init(e.getSuggestedConfigurationFile());
+		//PowerDropConfig.init(e.getSuggestedConfigurationFile());
     }
         
     @EventHandler
