@@ -35,8 +35,6 @@ public class PowerDrop {
 		
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("PowerDrop");
 		network.registerMessage(DropMessage.Handler.class, DropMessage.class, 0, Side.SERVER);
-		
-		//PowerDropConfig.init(e.getSuggestedConfigurationFile());
     }
         
     @EventHandler
