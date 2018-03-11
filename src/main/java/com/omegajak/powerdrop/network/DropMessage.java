@@ -45,40 +45,35 @@ public class DropMessage implements IMessage {
 		@Override
 		public DropMessage onMessage(final DropMessage message, final MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				IThreadListener thread = PowerDrop.proxy.getListener(ctx);
-				thread.addScheduledTask(new Runnable() {
-					@Override
-					public void run() {
-						EntityPlayerMP player = ctx.getServerHandler().player;
-						
-						if (player.inventory.getCurrentItem() != null) {
-							ItemStack currentItem = player.inventory.getCurrentItem().copy();
-							
-							if (message.isCtrlDown) {
-								currentItem.setCount(player.inventory.getCurrentItem().getCount());
-							} else {
-								currentItem.setCount(1);
-							}
-							
-							EntityItem dropped = new EntityItem(player.world, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
-							dropped.setPickupDelay(40); // Ticks until it can be picked up again
-							
-							
-							double normalizer = 3.1;
-							Vec3d lookVector = player.getLookVec();
-							dropped.motionX = (lookVector.x / normalizer) * message.chargeFactor;
-							dropped.motionY = (lookVector.y / normalizer) * message.chargeFactor + 0.12;
-							dropped.motionZ = (lookVector.z / normalizer) * message.chargeFactor;
-							
-							player.world.spawnEntity(dropped);
-							
-							if (player.inventory.getCurrentItem().getCount() > 1 && !message.isCtrlDown) // If it was just a normal throw
-								player.inventory.getCurrentItem().setCount(player.inventory.getCurrentItem().getCount() - 1);
-							else // If it was either the last item of the stack or they held control
-								player.inventory.deleteStack(player.inventory.getCurrentItem()); // Either way, the stack should be no more
-							
-							MinecraftForge.EVENT_BUS.post(new ItemTossEvent(dropped, player));
+				EntityPlayerMP player = ctx.getServerHandler().player;
+				
+				player.getServerWorld().addScheduledTask(() -> {
+					if (player.inventory.getCurrentItem() != null) {
+						ItemStack currentItem = player.inventory.getCurrentItem().copy();
+
+						if (message.isCtrlDown) {
+							currentItem.setCount(player.inventory.getCurrentItem().getCount());
+						} else {
+							currentItem.setCount(1);
 						}
+
+						EntityItem dropped = new EntityItem(player.world, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
+						dropped.setPickupDelay(40); // Ticks until it can be picked up again
+
+						double normalizer = 3.1;
+						Vec3d lookVector = player.getLookVec();
+						dropped.motionX = (lookVector.x / normalizer) * message.chargeFactor;
+						dropped.motionY = (lookVector.y / normalizer) * message.chargeFactor + 0.12;
+						dropped.motionZ = (lookVector.z / normalizer) * message.chargeFactor;
+
+						player.world.spawnEntity(dropped);
+
+						if (player.inventory.getCurrentItem().getCount() > 1 && !message.isCtrlDown) // If it was just a normal throw
+							player.inventory.getCurrentItem().setCount(player.inventory.getCurrentItem().getCount() - 1);
+						else // If it was either the last item of the stack or they held control
+							player.inventory.deleteStack(player.inventory.getCurrentItem()); // Either way, the stack should be no more
+
+						MinecraftForge.EVENT_BUS.post(new ItemTossEvent(dropped, player));
 					}
 				});
 			} else {
