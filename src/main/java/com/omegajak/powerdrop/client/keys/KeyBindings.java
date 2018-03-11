@@ -11,8 +11,7 @@ public class KeyBindings {
 	public static KeyBinding drop;
 	
 	public static void init() {
-		drop = new KeyBinding("key.powerdrop", KeyConflictContext.IN_GAME, Keyboard.KEY_Q, "key.categories.gameplay");
-		Minecraft.getMinecraft().gameSettings.keyBindDrop.setKeyConflictContext(KeyConflictContext.GUI);
+		drop = new KeyBinding("key.powerdrop", Keyboard.KEY_Q, "key.categories.gameplay");
 		ClientRegistry.registerKeyBinding(drop);
 	}
 }
