@@ -2,6 +2,7 @@ package com.omegajak.powerdrop;
 
 import com.mojang.logging.LogUtils;
 import com.omegajak.powerdrop.client.KeybindHandler;
+import com.omegajak.powerdrop.network.PowerDropPacketHandler;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -37,7 +38,7 @@ public class PowerDrop
 
     private void setup(final FMLCommonSetupEvent event)
     {
-        // some preinit code
+        PowerDropPacketHandler.init();
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
