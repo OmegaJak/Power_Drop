@@ -5,8 +5,13 @@ import com.omegajak.powerdrop.PowerDrop;
 import com.omegajak.powerdrop.PowerDropConfig;
 import com.omegajak.powerdrop.network.PowerDropMessage;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.FOVModifierEvent;
@@ -29,12 +34,13 @@ public class KeybindHandler {
             "key.categories.powerdrop"
     );
 
+    public static final double MAX_CHARGE_FACTOR = 4.0;
+    public static final long MIN_TIME_BEFORE_FOV_EFFECTS_MS = 150;
+
     private static float FOV_MULTIPLIER = 1.0f;
     private static boolean IS_FOV_RESETTING = false;
     private static boolean CTRL_PRESSED_INITIALLY = false;
-
-    public static final double MAX_CHARGE_FACTOR = 4.0;
-    public static final long MIN_TIME_BEFORE_FOV_EFFECTS_MS = 150;
+    private static boolean ALREADY_EMITTED_MAX_POWER_MSG = false;
 
     public static void register(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.addListener(KeybindHandler::handleKeyInputEvent);
@@ -51,7 +57,15 @@ public class KeybindHandler {
         }
 
         if (POWER_DROP_KEY.isDown() && POWER_DROP_KEY.getTimeSinceKeyDown() > MIN_TIME_BEFORE_FOV_EFFECTS_MS) {
-            FOV_MULTIPLIER = convertChargeTimeToFOVMultiplier(POWER_DROP_KEY.getTimeSinceKeyDown());
+            FOV_MULTIPLIER = getFOVMultiplier(POWER_DROP_KEY.getTimeSinceKeyDown());
+
+            if (getChargeFactor(POWER_DROP_KEY.getTimeSinceKeyDown()) >= MAX_CHARGE_FACTOR && !ALREADY_EMITTED_MAX_POWER_MSG && PowerDropConfig.INSTANCE.emitMaxPowerMsg.get()) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    player.sendMessage(new TextComponent("MAXIMUM POWER ACHIEVED").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), player.getUUID());
+                    ALREADY_EMITTED_MAX_POWER_MSG = true;
+                }
+            }
         } else if (IS_FOV_RESETTING) {
             float diff = FOV_MULTIPLIER - 1.0f;
             if (diff < 0.008f) {
@@ -63,10 +77,11 @@ public class KeybindHandler {
         }
 
         if (POWER_DROP_KEY.consumeHoldEnd()) {
-            double dropStrength = convertChargeTimeToFactor(POWER_DROP_KEY.getLastReleaseHoldTimeMs());
+            double dropStrength = getChargeFactor(POWER_DROP_KEY.getLastReleaseHoldTimeMs());
             sendDropPacket(dropStrength);
 
             IS_FOV_RESETTING = true;
+            ALREADY_EMITTED_MAX_POWER_MSG = false;
         }
     }
 
@@ -85,7 +100,7 @@ public class KeybindHandler {
         }
     }
 
-    private static double convertChargeTimeToFactor(long chargeTimeMs) {
+    private static double getChargeFactor(long chargeTimeMs) {
         double x = chargeTimeMs / 1000.0;
         double y = Math.atan(x) * 2.4 + 1.0; // Makes a nice curve that increases steeply initially, levels off and hits 4 after about 3 seconds
 
@@ -94,8 +109,8 @@ public class KeybindHandler {
         return y;
     }
 
-    private static float convertChargeTimeToFOVMultiplier(long chargeTime) {
-        double chargeFactor = convertChargeTimeToFactor(chargeTime);
+    private static float getFOVMultiplier(long chargeTimeMs) {
+        double chargeFactor = getChargeFactor(chargeTimeMs);
         chargeFactor -= 1.0; // Base charge factor is 1, we want it to be 0
         return 1.0F + (float) (chargeFactor / 8.0);
     }
