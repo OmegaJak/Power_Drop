@@ -29,12 +29,10 @@ public class PowerDrop
         // Register the setup method for modloading
         modBus.addListener(this::setup);
         modBus.addListener(this::clientSetup);
-        modBus.addListener(KeybindHandler::registerKeybinds);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ItemTossEventHandler());
-        MinecraftForge.EVENT_BUS.register(KeybindHandler.class);
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -43,6 +41,7 @@ public class PowerDrop
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.addListener(KeybindHandler::handleKeyInputEvent);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(KeybindHandler::registerKeybinds);
+        MinecraftForge.EVENT_BUS.register(KeybindHandler.class);
     }
 }
