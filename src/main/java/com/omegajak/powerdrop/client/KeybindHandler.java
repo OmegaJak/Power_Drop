@@ -1,7 +1,6 @@
 package com.omegajak.powerdrop.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.omegajak.powerdrop.PowerDrop;
 import com.omegajak.powerdrop.PowerDropConfig;
 import com.omegajak.powerdrop.network.PowerDropMessage;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
@@ -9,21 +8,15 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.client.event.FOVModifierEvent;
+import net.minecraftforge.client.event.ComputeFovModifierEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = PowerDrop.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class KeybindHandler {
     public static final TimedKeyMapping POWER_DROP_KEY = new TimedKeyMapping(
             "powerdrop.key.drop",
@@ -42,13 +35,12 @@ public class KeybindHandler {
     private static boolean CTRL_PRESSED_INITIALLY = false;
     private static boolean ALREADY_EMITTED_MAX_POWER_MSG = false;
 
-    public static void register(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.addListener(KeybindHandler::handleKeyInputEvent);
-        event.enqueueWork(() -> {
-           ClientRegistry.registerKeyBinding(POWER_DROP_KEY);
-        });
+    @SubscribeEvent
+    public static void registerKeybinds(RegisterKeyMappingsEvent event) {
+        event.register(POWER_DROP_KEY);
     }
 
+    @SubscribeEvent
     public static void handleKeyInputEvent(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
@@ -62,7 +54,7 @@ public class KeybindHandler {
             if (getChargeFactor(POWER_DROP_KEY.getTimeSinceKeyDown()) >= MAX_CHARGE_FACTOR && !ALREADY_EMITTED_MAX_POWER_MSG && PowerDropConfig.INSTANCE.emitMaxPowerMsg.get()) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null) {
-                    player.sendMessage(new TextComponent("MAXIMUM POWER ACHIEVED").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), player.getUUID());
+                    player.sendSystemMessage(Component.literal("MAXIMUM POWER ACHIEVED").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
                     ALREADY_EMITTED_MAX_POWER_MSG = true;
                 }
             }
@@ -86,9 +78,9 @@ public class KeybindHandler {
     }
 
     @SubscribeEvent
-    public static void onGetFieldOfViewEvent(FOVModifierEvent event) {
+    public static void onGetFieldOfViewEvent(ComputeFovModifierEvent event) {
         if (PowerDropConfig.INSTANCE.adjustFOV.get()) {
-            event.setNewfov(event.getFov() * FOV_MULTIPLIER);
+            event.setNewFovModifier(event.getFovModifier() * FOV_MULTIPLIER);
         }
     }
 
