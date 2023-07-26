@@ -2,6 +2,7 @@ package com.omegajak.powerdrop.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.omegajak.powerdrop.PowerDrop;
+import com.omegajak.powerdrop.PowerDropConfig;
 import com.omegajak.powerdrop.network.PowerDropMessage;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
 import net.minecraft.client.Minecraft;
@@ -71,7 +72,9 @@ public class KeybindHandler {
 
     @SubscribeEvent
     public static void onGetFieldOfViewEvent(FOVModifierEvent event) {
-        event.setNewfov(event.getFov() * FOV_MULTIPLIER);
+        if (PowerDropConfig.INSTANCE.adjustFOV.get()) {
+            event.setNewfov(event.getFov() * FOV_MULTIPLIER);
+        }
     }
 
     private static void sendDropPacket(double dropStrength) {
