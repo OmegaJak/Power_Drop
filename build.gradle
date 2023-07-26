@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 
-version = '2.0'
+version = "${project.minecraft_version}-${project.mod_version}"
 group = 'com.omegajak.powerdrop' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'powerdrop'
 
@@ -170,12 +170,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "examplemod",
-                "Specification-Vendor"    : "examplemodsareus",
+                "Specification-Title"     : "powerdrop",
+                "Specification-Vendor"    : "omegajak",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "examplemodsareus",
+                "Implementation-Vendor"   : "omegajak",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
