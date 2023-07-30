@@ -59,6 +59,7 @@ public class DropMessage implements IMessage {
 
 						EntityItem dropped = new EntityItem(player.world, player.posX, player.posY + player.eyeHeight - 0.39, player.posZ, currentItem);
 						dropped.setPickupDelay(40); // Ticks until it can be picked up again
+						dropped.setThrower(player.getName());
 
 						double normalizer = 3.1;
 						Vec3d lookVector = player.getLookVec();
