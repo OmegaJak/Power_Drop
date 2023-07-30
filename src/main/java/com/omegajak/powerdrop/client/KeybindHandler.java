@@ -41,6 +41,7 @@ public class KeybindHandler {
     private static boolean IS_FOV_RESETTING = false;
     private static boolean CTRL_PRESSED_INITIALLY = false;
     private static boolean ALREADY_EMITTED_MAX_POWER_MSG = false;
+    private static boolean IS_CHARGING = false;
 
     public static void register(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.addListener(KeybindHandler::handleKeyInputEvent);
@@ -50,13 +51,14 @@ public class KeybindHandler {
     }
 
     public static void handleKeyInputEvent(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+        if (event.phase != TickEvent.Phase.START) return;
 
         if (POWER_DROP_KEY.consumeHoldStart()) {
             CTRL_PRESSED_INITIALLY = Screen.hasControlDown();
+            IS_CHARGING = true;
         }
 
-        if (POWER_DROP_KEY.isDown() && POWER_DROP_KEY.getTimeSinceKeyDown() > MIN_TIME_BEFORE_FOV_EFFECTS_MS) {
+        if (IS_CHARGING && POWER_DROP_KEY.isDown() && POWER_DROP_KEY.getTimeSinceKeyDown() > MIN_TIME_BEFORE_FOV_EFFECTS_MS) {
             FOV_MULTIPLIER = getFOVMultiplier(POWER_DROP_KEY.getTimeSinceKeyDown());
 
             if (getChargeFactor(POWER_DROP_KEY.getTimeSinceKeyDown()) >= MAX_CHARGE_FACTOR && !ALREADY_EMITTED_MAX_POWER_MSG && PowerDropConfig.INSTANCE.emitMaxPowerMsg.get()) {
@@ -76,12 +78,15 @@ public class KeybindHandler {
             }
         }
 
+        avoidConflictWithVanillaDrop();
+
         if (POWER_DROP_KEY.consumeHoldEnd()) {
             double dropStrength = getChargeFactor(POWER_DROP_KEY.getLastReleaseHoldTimeMs());
             sendDropPacket(dropStrength);
 
             IS_FOV_RESETTING = true;
             ALREADY_EMITTED_MAX_POWER_MSG = false;
+            IS_CHARGING = false;
         }
     }
 
@@ -97,6 +102,15 @@ public class KeybindHandler {
         if (minecraft.player != null) {
             Minecraft.getInstance().player.getInventory().removeFromSelected(CTRL_PRESSED_INITIALLY); // Mirrors LocalPlayer.drop, needed for client to update properly
             PowerDropPacketHandler.INSTANCE.sendToServer(new PowerDropMessage(CTRL_PRESSED_INITIALLY, dropStrength));
+        }
+    }
+
+    private static void avoidConflictWithVanillaDrop() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (IS_CHARGING) {
+            while (minecraft.options.keyDrop.consumeClick()) {
+                // Do nothing, we just want to make sure we consumed them all to suppress the vanilla event
+            }
         }
     }
 
