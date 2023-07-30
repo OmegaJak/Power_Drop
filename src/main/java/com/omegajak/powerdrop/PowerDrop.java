@@ -41,7 +41,6 @@ public class PowerDrop
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(KeybindHandler::registerKeybinds);
         MinecraftForge.EVENT_BUS.register(KeybindHandler.class);
     }
 }
