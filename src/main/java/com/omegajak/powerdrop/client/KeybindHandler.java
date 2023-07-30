@@ -88,9 +88,9 @@ public class KeybindHandler {
     }
 
     private static void sendDropPacket(double dropStrength) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player != null) {
-            Minecraft.getInstance().player.getInventory().removeFromSelected(CTRL_PRESSED_INITIALLY); // Mirrors LocalPlayer.drop, needed for client to update properly
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && !player.getInventory().getSelected().isEmpty()) {
+            player.getInventory().removeFromSelected(CTRL_PRESSED_INITIALLY); // Mirrors LocalPlayer.drop, needed for client to update properly
             PowerDropPacketHandler.INSTANCE.sendToServer(new PowerDropMessage(CTRL_PRESSED_INITIALLY, dropStrength));
         }
     }
