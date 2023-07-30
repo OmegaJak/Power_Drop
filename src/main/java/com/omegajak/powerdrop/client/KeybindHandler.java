@@ -1,6 +1,7 @@
 package com.omegajak.powerdrop.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.omegajak.powerdrop.PowerDrop;
 import com.omegajak.powerdrop.PowerDropConfig;
 import com.omegajak.powerdrop.network.PowerDropMessage;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
@@ -10,12 +11,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 public class KeybindHandler {
     public static final TimedKeyMapping POWER_DROP_KEY = new TimedKeyMapping(
@@ -34,11 +37,6 @@ public class KeybindHandler {
     private static boolean IS_FOV_RESETTING = false;
     private static boolean CTRL_PRESSED_INITIALLY = false;
     private static boolean ALREADY_EMITTED_MAX_POWER_MSG = false;
-
-    @SubscribeEvent
-    public static void registerKeybinds(RegisterKeyMappingsEvent event) {
-        event.register(POWER_DROP_KEY);
-    }
 
     @SubscribeEvent
     public static void handleKeyInputEvent(TickEvent.ClientTickEvent event) {
@@ -105,5 +103,13 @@ public class KeybindHandler {
         double chargeFactor = getChargeFactor(chargeTimeMs);
         chargeFactor -= 1.0; // Base charge factor is 1, we want it to be 0
         return 1.0F + (float) (chargeFactor / 8.0);
+    }
+
+    @Mod.EventBusSubscriber(modid = PowerDrop.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class ClientModBusEvents {
+        @SubscribeEvent
+        public static void registerKeybinds(RegisterKeyMappingsEvent event) {
+            event.register(POWER_DROP_KEY);
+        }
     }
 }
