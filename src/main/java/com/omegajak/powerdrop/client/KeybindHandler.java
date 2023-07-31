@@ -1,36 +1,36 @@
 package com.omegajak.powerdrop.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.omegajak.powerdrop.PowerDrop;
 import com.omegajak.powerdrop.PowerDropConfig;
 import com.omegajak.powerdrop.network.PowerDropMessage;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.client.event.FOVModifierEvent;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber(modid = PowerDrop.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class KeybindHandler {
+    public static final int Q_KEYCODE = 81;
     public static final TimedKeyMapping POWER_DROP_KEY = new TimedKeyMapping(
             "powerdrop.key.drop",
             KeyConflictContext.IN_GAME,
             KeyModifier.SHIFT,
-            InputConstants.Type.KEYSYM,
-            InputConstants.KEY_Q,
+            InputMappings.Type.KEYSYM,
+            Q_KEYCODE,
             "key.categories.powerdrop"
     );
 
@@ -62,9 +62,9 @@ public class KeybindHandler {
             FOV_MULTIPLIER = getFOVMultiplier(POWER_DROP_KEY.getTimeSinceKeyDown());
 
             if (getChargeFactor(POWER_DROP_KEY.getTimeSinceKeyDown()) >= MAX_CHARGE_FACTOR && !ALREADY_EMITTED_MAX_POWER_MSG && PowerDropConfig.INSTANCE.emitMaxPowerMsg.get()) {
-                LocalPlayer player = Minecraft.getInstance().player;
+                ClientPlayerEntity player = Minecraft.getInstance().player;
                 if (player != null) {
-                    player.sendMessage(new TextComponent("MAXIMUM POWER ACHIEVED").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), player.getUUID());
+                    player.sendMessage(new StringTextComponent("MAXIMUM POWER ACHIEVED").setStyle(Style.EMPTY.withColor(TextFormatting.GOLD)), player.getUUID());
                     ALREADY_EMITTED_MAX_POWER_MSG = true;
                 }
             }
@@ -91,16 +91,16 @@ public class KeybindHandler {
     }
 
     @SubscribeEvent
-    public static void onGetFieldOfViewEvent(FOVModifierEvent event) {
+    public static void onGetFieldOfViewEvent(FOVUpdateEvent event) {
         if (PowerDropConfig.INSTANCE.adjustFOV.get()) {
             event.setNewfov(event.getFov() * FOV_MULTIPLIER);
         }
     }
 
     private static void sendDropPacket(double dropStrength) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null && !player.getInventory().getSelected().isEmpty()) {
-            player.getInventory().removeFromSelected(CTRL_PRESSED_INITIALLY); // Mirrors LocalPlayer.drop, needed for client to update properly
+        ClientPlayerEntity player = Minecraft.getInstance().player;
+        if (player != null && !player.inventory.getSelected().isEmpty()) {
+            player.inventory.removeItem(player.inventory.selected, CTRL_PRESSED_INITIALLY ? player.inventory.getSelected().getCount() : 1); // Mirrors LocalPlayer.drop, needed for client to update properly
             PowerDropPacketHandler.INSTANCE.sendToServer(new PowerDropMessage(CTRL_PRESSED_INITIALLY, dropStrength));
         }
     }

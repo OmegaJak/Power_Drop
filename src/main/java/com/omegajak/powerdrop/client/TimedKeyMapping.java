@@ -1,21 +1,21 @@
 package com.omegajak.powerdrop.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 
 @OnlyIn(Dist.CLIENT)
-public class TimedKeyMapping extends KeyMapping {
+public class TimedKeyMapping extends KeyBinding {
     private boolean wasDown = false;
     private long holdStartTime = 0;
     private long lastReleaseHoldTime = 0;
     private int holdStartCount = 0;
     private int holdEndCount = 0;
 
-    public TimedKeyMapping(String description, IKeyConflictContext keyConflictContext, KeyModifier keyModifier, InputConstants.Type inputType, int keyCode, String category) {
+    public TimedKeyMapping(String description, IKeyConflictContext keyConflictContext, KeyModifier keyModifier, InputMappings.Type inputType, int keyCode, String category) {
         super(description, keyConflictContext, keyModifier, inputType, keyCode, category);
     }
 

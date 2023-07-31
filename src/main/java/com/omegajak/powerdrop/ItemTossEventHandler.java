@@ -1,6 +1,6 @@
 package com.omegajak.powerdrop;
 
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -16,10 +16,10 @@ public class ItemTossEventHandler {
 
     @SubscribeEvent
     public void onPlayerTossEvent(ItemTossEvent event) {
-        Vec3 currentDelta = event.getEntity().getDeltaMovement();
+        Vector3d currentDelta = event.getEntity().getDeltaMovement();
         Double drop_strength = PLAYER_DROP_STRENGTHS.remove(event.getPlayer().getUUID());
         if (drop_strength != null) {
-            Vec3 newDelta = currentDelta.multiply(drop_strength, drop_strength, drop_strength);
+            Vector3d newDelta = currentDelta.multiply(drop_strength, drop_strength, drop_strength);
             event.getEntity().setDeltaMovement(newDelta);
         }
     }

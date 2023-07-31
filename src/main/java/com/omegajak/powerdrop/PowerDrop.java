@@ -1,6 +1,5 @@
 package com.omegajak.powerdrop;
 
-import com.mojang.logging.LogUtils;
 import com.omegajak.powerdrop.client.KeybindHandler;
 import com.omegajak.powerdrop.network.PowerDropPacketHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -11,13 +10,14 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(PowerDrop.MODID)
 public class PowerDrop
 {
     // Directly reference a slf4j logger
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     public static final String MODID = "powerdrop";
 
     public PowerDrop()

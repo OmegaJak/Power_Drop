@@ -1,9 +1,9 @@
 package com.omegajak.powerdrop.network;
 
 import com.omegajak.powerdrop.ItemTossEventHandler;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -16,18 +16,18 @@ public class PowerDropMessage {
         this.dropStrength = dropStrength;
     }
 
-    public static void encode(PowerDropMessage msg, FriendlyByteBuf byteBuf) {
+    public static void encode(PowerDropMessage msg, PacketBuffer byteBuf) {
         byteBuf.writeBoolean(msg.ctrlPressed);
         byteBuf.writeDouble(msg.dropStrength);
     }
 
-    public static PowerDropMessage decode(FriendlyByteBuf byteBuf) {
+    public static PowerDropMessage decode(PacketBuffer byteBuf) {
         return new PowerDropMessage(byteBuf.readBoolean(), byteBuf.readDouble());
     }
 
     public static void handle(PowerDropMessage msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+            ServerPlayerEntity player = ctx.get().getSender();
 
             if (player != null) {
                 player.resetLastActionTime();
